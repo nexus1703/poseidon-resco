@@ -1,4 +1,4 @@
-Diagramme d’interaction RESCO ↔ Trident (v1 – REST “simple et montrable”)
+Diagramme d’interaction RESCO ↔ Trident
 
 Acteurs :
 

@@ -52,43 +52,8 @@ Si REJECTED → retour IN_REPAIR + défauts attachés
 
 Diagramme UML (Mermaid sequence diagram)
 
-Tu peux coller ça tel quel dans un README (oui, c’est le comble 😄) :
+<img width="3980" height="2522" alt="mermaid-diagram" src="https://github.com/user-attachments/assets/88e281c5-77b6-435f-824f-dc7f2cb77cf5" />
 
-sequenceDiagram
-  autonumber
-  actor Tech as Opérateur
-  participant Calypso as Calypso (Intake)
-  participant Trident as Trident (State Machine)
-  participant Resco as RESCO Station
-  participant Inject as Software Injecté (Device)
-  participant MermaidUI as Mermaid UI
-
-  %% ---- DIAG PASS (Calypso) ----
-  Tech->>Calypso: Create Case + Asset (photos, symptoms)
-  Calypso->>Trident: POST /cases/{case_id}/assets/{asset_id}/intake
-  Trident-->>Calypso: 201 Created (state=INTAKE)
-
-  Tech->>Resco: Scan QR (asset_id) + Start DIAG (SHORT/FULL)
-  Resco->>Trident: POST /rescotests/runs (asset_id, test_type, mode=DIAG)
-  Trident-->>Resco: 201 run_id + baseline_ref(optional)
-  Resco->>Inject: Start test sequence (USB-injected)
-  Inject-->>Resco: metrics + faults + result
-  Resco->>Trident: POST /rescotests/runs/{run_id}/result (report JSON)
-  Trident-->>Resco: 200 ACK (new_state=DIAG_COMPLETED)
-  Trident-->>MermaidUI: State+Timeline available (poll/websocket later)
-
-  %% ---- QA PASS (Pre-Delivery) ----
-  Tech->>Resco: Start QA (SHORT/FULL) (asset_id)
-  Resco->>Trident: POST /rescotests/runs (asset_id, test_type, mode=QA)
-  Trident-->>Resco: 201 run_id + baseline_ref(DIAG report)
-  Resco->>Inject: Start QA sequence
-  Inject-->>Resco: metrics + faults + result
-  Resco->>Trident: POST /rescotests/runs/{run_id}/result (report JSON)
-  alt QA PASS
-    Trident-->>Resco: 200 ACK (state=QA_VALIDATED -> READY)
-  else QA FAIL
-    Trident-->>Resco: 200 ACK (state=QA_REJECTED -> IN_REPAIR)
-  end
 
 Endpoints Trident (v1 – REST)
 
